@@ -1,9 +1,15 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import {Button, ButtonIcon, fallDownAnimation, fadeIn} from "./global-styles";
+import { Button, ButtonIcon, fallDownAnimation, fadeIn } from "./global-styles";
 import GoeyFilter from "./goey-filter";
 import Connections from "./connections";
+
+export const MASTER_BRANCH = 'main';
+export const DEVELOP_BRANCH = 'develop';
+export const FEATURE_BRANCH = 'feature/JIRA-';
+export const RELEASE_BRANCH = 'release/';
+export const HOTFIX_BRANCH = 'hotfix/JIRA-';
 
 const GitFlowElm = styled.div`
     margin: 0 auto;
@@ -56,9 +62,7 @@ const BranchActions = styled.div`
 
 const BranchName = styled.h4`
     position: relative;
-    font-size: .7rem;
-    text-transform: uppercase;
-    letter-spacing:1.5pt;
+    font-size: .6rem;
     margin-top: 10px;
     opacity: .6;
 `;
@@ -114,7 +118,6 @@ const ConnectionsContainer = styled.div`
 
 
 class GitFlow extends Component {
-
     componentWillMount() {
         this.commitPositions = {};
     }
@@ -141,9 +144,9 @@ class GitFlow extends Component {
     };
 
     connectCommits = () => {
-        const {commits} = this.props.project;
+        const { commits } = this.props.project;
         let paths = commits.map(commit => {
-            const {parents} = commit;
+            const { parents } = commit;
             const tgtPosition = this.commitPositions[commit.id];
             return (parents || []).map(p => {
                 return {
@@ -155,12 +158,12 @@ class GitFlow extends Component {
             });
         });
         paths = [].concat.apply([], paths);
-        ReactDOM.render(<Connections paths={paths}/>, this.connectionsContainer);
+        ReactDOM.render(<Connections paths={paths} />, this.connectionsContainer);
     };
 
 
     deleteBranch = (branchID) => {
-        const {commits} = this.props.project;
+        const { commits } = this.props.project;
         const commitsToDelete = commits.filter(c => c.branch === branchID).map(c => c.id);
         commitsToDelete.forEach(c => {
             delete this.commitPositions[c.id];
@@ -231,13 +234,13 @@ class GitFlow extends Component {
             actionsElm = this.renderDeleteButton(branch);
         } else {
             actionsElm = (<BranchActions
-                    count={2}
-                >
-                    {this.renderCommitButton(branch)}
-                    <ButtonIcon
-                        onClick={this.props.onRelease.bind(this, branch.id, undefined)}
-                    >M</ButtonIcon>
-                </BranchActions>
+                count={2}
+            >
+                {this.renderCommitButton(branch)}
+                <ButtonIcon
+                    onClick={this.props.onRelease.bind(this, branch.id, undefined)}
+                >M</ButtonIcon>
+            </BranchActions>
             );
         }
         return (
@@ -309,7 +312,7 @@ class GitFlow extends Component {
             <GridColumn
                 count={noOfBranches}
             >
-                <ConnectionsContainer innerRef={this.cacheConnectionsContainer}/>
+                <ConnectionsContainer innerRef={this.cacheConnectionsContainer} />
                 {
                     branches.map((branch, index) => {
                         return this.renderBranchCommit(branch, index)
@@ -320,9 +323,10 @@ class GitFlow extends Component {
     };
 
     renderBranchCommit = (branch, branchIndex) => {
-        const {commits} = this.props.project;
+        const { commits } = this.props.project;
         const branchCommits = commits.filter(c => c.branch === branch.id);
-        let isMasterBranch = branch.name === 'master';
+        let isMasterBranch = branch.name === MASTER_BRANCH;
+
         return (
             <Commits
                 className={branch.merged ? 'merged' : ''}
@@ -349,11 +353,11 @@ class GitFlow extends Component {
 
     render() {
 
-        const {project} = this.props;
-        const {branches} = project;
-        const masterBranch = branches.find(b => b.name === 'master');
+        const { project } = this.props;
+        const { branches } = project;
+        const masterBranch = branches.find(b => b.name === MASTER_BRANCH);
         const hotFixBranches = branches.filter(b => b.hotFixBranch);
-        const developBranch = branches.find(b => b.name === 'develop');
+        const developBranch = branches.find(b => b.name === DEVELOP_BRANCH);
         const releaseBranches = branches.filter(b => b.releaseBranch);
         const featureBranches = branches.filter(b => b.featureBranch);
         const noOfBranches = branches.length;
@@ -376,7 +380,7 @@ class GitFlow extends Component {
                     {this.renderBranchHeaders(param)}
                     {this.renderBranchCommits(param)}
                 </ProjectElm>
-                <GoeyFilter/>
+                <GoeyFilter />
             </GitFlowElm>
         )
     }

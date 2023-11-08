@@ -1,10 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import styled from "styled-components";
 import GitFlow from "./gitflow";
+import { MASTER_BRANCH, DEVELOP_BRANCH, FEATURE_BRANCH, HOTFIX_BRANCH, RELEASE_BRANCH } from "./gitflow";
 import shortid from "shortid";
-
-const DEVELOP = 'develop';
-const MASTER = 'master';
 
 const masterID = shortid.generate();
 const developID = shortid.generate();
@@ -28,13 +26,13 @@ const seedData = () => {
     return {
         branches: [
             {
-                name: MASTER,
+                name: MASTER_BRANCH,
                 id: masterID,
                 canCommit: false,
                 color: '#E040FB',
             },
             {
-                name: DEVELOP,
+                name: DEVELOP_BRANCH,
                 id: developID,
                 canCommit: true,
                 color: '#FF8A65',
@@ -56,7 +54,7 @@ class App extends Component {
     };
 
     handleCommit = (branchID, mergeGridIndex = 0) => {
-        let {commits} = this.state.project;
+        let { commits } = this.state.project;
         const branchCommits = commits.filter(c => c.branch === branchID);
         const lastCommit = branchCommits[branchCommits.length - 1];
         commits.push({
@@ -71,9 +69,9 @@ class App extends Component {
     };
 
     handleNewFeature = () => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
         let featureBranches = branches.filter(b => b.featureBranch);
-        let featureBranchName = 'feature ' + ((featureBranches || []).length + 1);
+        let featureBranchName = FEATURE_BRANCH + ((featureBranches || []).length + 1);
         let developCommits = commits.filter(c => c.branch === developID);
         const lastDevelopCommit = developCommits[developCommits.length - 1];
         let featureOffset = lastDevelopCommit.gridIndex + 1;
@@ -101,9 +99,9 @@ class App extends Component {
     };
 
     handleNewHotFix = () => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
         let hotFixBranches = branches.filter(b => b.hotFixBranch);
-        let hotFixBranchName = 'hot ' + ((hotFixBranches || []).length + 1);
+        let hotFixBranchName = HOTFIX_BRANCH + ((hotFixBranches || []).length + 1);
         let masterCommits = commits.filter(c => c.branch === masterID);
         const lastMasterCommit = masterCommits[masterCommits.length - 1];
         let hotFixOffset = lastMasterCommit.gridIndex + 1;
@@ -132,9 +130,9 @@ class App extends Component {
     };
 
     handleNewRelease = () => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
         let releaseBranches = branches.filter(b => b.releaseBranch);
-        let releaseBranchName = 'release ' + ((releaseBranches || []).length + 1);
+        let releaseBranchName = RELEASE_BRANCH + ((releaseBranches || []).length + 1);
         let developCommits = commits.filter(c => c.branch === developID);
         const lastDevelopCommit = developCommits[developCommits.length - 1];
         let releaseOffset = lastDevelopCommit.gridIndex + 1;
@@ -162,7 +160,7 @@ class App extends Component {
     };
 
     handleRelease = (sourceBranchID) => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
         const sourceBranch = branches.find(b => b.id === sourceBranchID);
         const sourceCommits = commits.filter(c => c.branch === sourceBranchID);
 
@@ -199,7 +197,7 @@ class App extends Component {
     };
 
     handleMerge = (sourceBranchID, targetBranchID = developID) => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
 
         const sourceBranch = branches.find(b => b.id === sourceBranchID);
         const sourceCommits = commits.filter(c => c.branch === sourceBranchID);
@@ -227,7 +225,7 @@ class App extends Component {
     };
 
     handleDeleteBranch = (branchID) => {
-        let {branches, commits} = this.state.project;
+        let { branches, commits } = this.state.project;
 
         let commitsToDelete = commits.filter(c => c.branch === branchID);
         let lastCommit = commitsToDelete[commitsToDelete.length - 1];
